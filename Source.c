@@ -15,7 +15,7 @@ typedef struct student {
 typedef struct university {
 	student* students;
 	int num_of_students;
-}university;
+} university;
 
 int print_menu();
 void Option_1(university* uni);
@@ -119,7 +119,7 @@ void Option_2(university* uni, FILE* f) {
 	fprintf(f, "\nOption 2:\n");
 	for (i = 0; i < uni->num_of_students; i++) {
 		uni->students[i].final_hw_grade = HW_Grade(uni, i);
-		fprintf(f, "Studen %d: %s %ld %.2f %c\n", i + 1, uni->students[i].name, uni->students[i].id, uni->students[i].grade, uni->students[i].final_hw_grade); // prints the students data into the file
+		fprintf(f, "Student %d: %s %ld %.2f %c\n", i + 1, uni->students[i].name, uni->students[i].id, uni->students[i].grade, uni->students[i].final_hw_grade); // prints the students data into the file
 	}
 	fprintf(f, "\n");
 	printf("Option '2' Done successfully\n\n");
@@ -131,7 +131,7 @@ void Option_3(university* uni, FILE* f) {
 	float final_grade;
 	fprintf(f, "Option 3:\nBEFORE:\n");
 	for (i = 0; i < uni->num_of_students; i++) {
-		fprintf(f, "Studen %d: %s %ld %.2f %c\n", i + 1, uni->students[i].name, uni->students[i].id, uni->students[i].grade, uni->students[i].final_hw_grade); // prints the data BEFORE like asked into output.txt
+		fprintf(f, "Student %d: %s %ld %.2f %c\n", i + 1, uni->students[i].name, uni->students[i].id, uni->students[i].grade, uni->students[i].final_hw_grade); // prints the data BEFORE like asked into output.txt
 	}
 	fprintf(f, "\nAFTER:\n");
 	for (i = 0; i < uni->num_of_students; i++) {
@@ -145,7 +145,7 @@ void Option_3(university* uni, FILE* f) {
 		} else {
 			final_grade = uni->students[i].grade;
 		}
-		fprintf(f, "Studen %d: %s %ld %.2f %c final : %.2f\n", i + 1, uni->students[i].name, uni->students[i].id, uni->students[i].grade, uni->students[i].final_hw_grade, final_grade); // prints the data with the final grade into output.txt
+		fprintf(f, "Student %d: %s %ld %.2f %c final : %.2f\n", i + 1, uni->students[i].name, uni->students[i].id, uni->students[i].grade, uni->students[i].final_hw_grade, final_grade); // prints the data with the final grade into output.txt
 	}
 	printf("Option '3' Done successfully\n\n");
 }
@@ -158,35 +158,32 @@ void Option_4(university* uni) {
 	temp_arr = (student*)realloc(uni->students, (uni->num_of_students + 1) * sizeof(student)); // re-allocation for new student
 	if (temp_arr != NULL) {
 		uni->students = temp_arr;
-	}
-	else {
+	} else {
 		free_func(uni->num_of_students, uni->num_of_students);
 		Error_Msg("allocation problem");
-
 	}
 	printf("Option 4:\nEnter student information (name,id,grade,hw[5 grades]: ");
 	scanf("%s %ld %f %s", name, &uni->students[uni->num_of_students].id, &uni->students[uni->num_of_students].grade, uni->students[uni->num_of_students].hw_grades);  // input into the students array
 	uni->students[uni->num_of_students].name = (char*)malloc(sizeof(char) * (strlen(name) + 1)); // allocation for new student name
 	if (uni->students[uni->num_of_students].name == NULL) {
-		printf("No enought memory");
 		free_func(uni->students, uni->num_of_students);
-		exit(1);
+		Error_Msg("Not enough memory.");
 	}
 	strcpy(uni->students[uni->num_of_students].name, name);
-	uni->num_of_students++; // number of students update (+1)
+	uni->num_of_students++;
 	printf("Option '4' Done successfully\n\n");
 }
 
 void Option_5(university* uni, FILE* f) {
 	/* the function adds bonus to student by given student name input by user, if student found adds the bonus and prints
-	all the students data with round number grade, if student isnt found - prints relevant message*/
+	all the students data with round number grade, if student isnt found - prints relevant message */
 	int i, index_of_student = -1, bonus;
 	char name[99];
 	printf("Option 5:\nEnter student name and points for bonus increase: ");
 	scanf("%s %d", name, &bonus); // input studnet name, bonus.
 	fprintf(f, "\nOPTION 5:\n");
 	for (i = 0; i < uni->num_of_students; i++) {
-		if (strcmp(name, uni->students[i].name) == 0) { // checks if the stundent in the array == student want to add bonus to
+		if (strcmp(name, uni->students[i].name) == 0) { // checks if the student in the array == student want to add bonus to
 			index_of_student = i;
 			uni->students[i].grade += bonus; // updates the student grade
 			if (uni->students[i].grade > 100) { // if the grade after bonus is over 100 -> update to 100.
@@ -213,16 +210,16 @@ char HW_Grade(university* uni, int student_index) {
 	/* The function calculate Homework final grade */
 	int i, j, grade_counter = 0;
 	for (j = 0; j < 5; j++) {
-		if (uni->students[student_index].hw_grades[j] == '1')
+		if (uni->students[student_index].hw_grades[j] == '1') {
 			grade_counter++;
+		}
 	}
 	if (grade_counter >= 3) // if 3+ grades are '1'
 		return '1';
 	return '0';
 }
 
-void Error_Msg(char* str)
-{
+void Error_Msg(char* str) {
 	/* Function to handle errors */
 	printf("\n%s", str);
 	exit(1);
@@ -230,7 +227,7 @@ void Error_Msg(char* str)
 
 void free_func(student* student, int size) {
 	/* the function free student array, student.name allocations */
-	int i = 0;
+	int i;
 	for (i = 0; i < size; i++) {
 		free(student[i].name);
 	}
